@@ -25,6 +25,7 @@ function RenderDish(props){
 class Dishdetail extends Component {
 
     constructor(props){
+        console.log("in dish detail")
         super(props);
 
         this.state = {
