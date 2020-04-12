@@ -40,13 +40,16 @@ export const fetchDishes = () => (dispatch) => {
         if (response.ok) {
           return response;
         } else {
+            
           var error = new Error('Error ' + response.status + ': ' + response.statusText);
           error.response = response;
           throw error;
         }
       },
       error => {
+            
             var errmess = new Error(error.message);
+            // console.log("in error",errmess)
             throw errmess;
       })
     .then(response => response.json())
