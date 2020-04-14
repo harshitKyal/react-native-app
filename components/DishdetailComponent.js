@@ -35,9 +35,9 @@ function RenderDish(props){
 
     const recognizeDrag = ({ moveX, moveY, dx, dy })=>{
         if ( dx < -200 )
-            return true;
-        else
-            return false;
+            return 'righToLeft';
+        else if(dx>200)
+            return 'leftToRight';
     };
 
     const panResponder = PanResponder.create({
@@ -49,7 +49,7 @@ function RenderDish(props){
         },
         onPanResponderEnd: (e, gestureState) => {
             console.log("pan responder end", gestureState);
-            if(recognizeDrag(gestureState)){
+            if(recognizeDrag(gestureState) == 'righToLeft'){
                 Alert.alert(
                     'Add Favorite',
                     'Are you sure you wish to add ' + dish.name + ' to favorite?',
@@ -60,8 +60,12 @@ function RenderDish(props){
                     { cancelable: false }
                 );
 
-            return true;
+            
             }
+            else if(recognizeDrag(gestureState) == 'leftToRight'){
+                props.openCommentForm();
+            }
+            return true;
         }
     });
 
@@ -201,6 +205,7 @@ class Dishdetail extends Component {
                 favorite={this.props.favorites.some(el => el === dishId)}
                 onPress={() => this.markFavorite(dishId)}
                 onPressAddComment={this.toggleModal}
+                openCommentForm={() => this.openCommentForm()}
                 />
                 <RenderComments comments={this.props.comments.comments.filter((comment) => comment.dishId ===dishId)}
                     />
