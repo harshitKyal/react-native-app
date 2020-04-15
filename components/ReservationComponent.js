@@ -4,7 +4,7 @@ import DatePicker from 'react-native-datepicker'
 import * as Animatable from 'react-native-animatable';
 import { Notifications } from 'expo';
 import * as Permissions from 'expo-permissions';
-
+import * as Calendar from 'expo-calendar';
 
 class Reservation extends Component {
 
@@ -26,6 +26,11 @@ class Reservation extends Component {
         this.setState({showModal: !this.state.showModal});
     }
 
+    confirmReservation(date) {
+        this.presentLocalNotification(date);
+        this.addReservationToCalendar(date);
+        this.resetForm();
+      }
 
     handleReservation() {
         const { date, guests, smoking } = this.state;
@@ -43,8 +48,7 @@ class Reservation extends Component {
                 text: 'OK',
                 // eslint-disable-next-line no-confusing-arrow, no-console
                 onPress: () => {
-                    this.presentLocalNotification(this.state.date);
-                    this.resetForm();
+                    this.confirmReservation(this.state.date);
                 }
             },
             ],
@@ -72,6 +76,52 @@ class Reservation extends Component {
         }
         return permission;
     }
+
+     async obtainCalendarPermission() {
+        let permission = await Permissions.getAsync(Permissions.CALENDAR);
+        if (permission.status !== 'granted') {
+          permission = await Permissions.askAsync(Permissions.CALENDAR);
+          if (permission.status !== 'granted') {
+            Alert.alert('Permission not granted to access the calendar');
+          }
+        }
+        return permission;
+      }
+
+      async getDefaultCalendarSource() {
+        const calendars = await Calendar.getCalendarsAsync();
+        const defaultCalendars = calendars.filter(each => each.source.name === 'Default');
+        return defaultCalendars[0].source;
+      }
+  
+      async addReservationToCalendar(date){
+          await this.obtainCalendarPermission();
+          //gets id of default calendar
+          const defaultCalendarSource =
+              Platform.OS === 'ios'
+                ? await this.getDefaultCalendarSource()
+               : { isLocalAccount: true, name: 'Expo Calendar'};
+                const defaultCalendarId = await Calendar.createCalendarAsync({
+                  title: 'Expo Calendar',
+                  color: 'blue',
+                  entityType: Calendar.EntityTypes.EVENT,
+                  sourceId: defaultCalendarSource.id,
+                  source: defaultCalendarSource,
+                  name: 'internalCalendarName',
+                  ownerAccount: 'personal',
+                  accessLevel: Calendar.CalendarAccessLevel.OWNER,
+            });
+          console.log(defaultCalendarId);
+          //setting up events
+          await Calendar.createEventAsync(defaultCalendarId, {
+              title: 'Con Fusion Table Reservation',
+              startDate: new Date(Date.parse(date)),
+              endDate: new Date(Date.parse(date) + 2*60*60*1000),
+              timeZone: "Asia/Hong_Kong",
+              location: "121, Clear Water Bay Road, Clear Water Bay, Kowloon, Hong Kong"
+          });
+          Alert.alert('Reservation has been added to your calendar');
+      }
 
     async presentLocalNotification(date) {
         await this.obtainNotificationPermission();
@@ -137,8 +187,7 @@ class Reservation extends Component {
                         },
                         dateInput: {
                             marginLeft: 36
-                        }
-                        // ... You can check the source to find the other keys. 
+                        } 
                         }}
                         onDateChange={(date) => {this.setState({date: date})}}
                     />
