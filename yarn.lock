@@ -2850,7 +2850,7 @@ expect@^25.3.0:
     jest-message-util "^25.3.0"
     jest-regex-util "^25.2.6"
 
-expo-asset@~8.1.0, expo-asset@~8.1.4:
+expo-asset@^8.1.4, expo-asset@~8.1.0, expo-asset@~8.1.4:
   version "8.1.4"
   resolved "https://registry.yarnpkg.com/expo-asset/-/expo-asset-8.1.4.tgz#5265c28c1c279b2f9779269195bec4caf250ba5d"
   integrity sha512-6YqW22F5issD1rgqBCja8TCA2dr+yf/89FdYs/jhQYpw5OJAnAvfpK3GL8h3jRCu1TvxZqhH5NeLG6f2b3oUqg==
