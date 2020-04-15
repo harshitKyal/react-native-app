@@ -1,12 +1,18 @@
 import React ,{ Component} from "react";
-import { Card } from 'react-native-elements';
+import { Card ,Icon,Button} from 'react-native-elements';
 import { Text, ScrollView, View } from 'react-native';
 import * as Animatable from 'react-native-animatable';
+import * as MailComposer from 'expo-mail-composer';
 
 class Contact extends Component{
     
-    
-
+    sendMail(){
+        MailComposer.composeAsync({
+            recipients:['harshitkyal@gmail.com'],
+            subject:"Enquiry",
+            body:'To whom it may concern :'
+        });
+    }
     static navigationOptions = {
         title: 'Contact',
     };
@@ -24,6 +30,12 @@ class Contact extends Component{
                     <Text style={{ margin: 10, lineHeight: 50, fontSize: 16 }}>
                     {contactInfo}
                     </Text>
+                    <Button
+                        title="Send Email"
+                        buttonStyle={{backgroundColor: "#512DA8"}}
+                        icon={<Icon name='envelope-o' type='font-awesome' color='white' />}
+                        onPress={this.sendMail}
+                        />
                 </Card>
                 </Animatable.View>
             </ScrollView>
